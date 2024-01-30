@@ -62,8 +62,10 @@ def run(user_options):
 
     print("Results:")
     print(score)
+    print("\nAverage precision:")
+    print(score.sum()/K_FOLD_CROSS_VALIDATION, end="%\n")
     
-    ### Uncomment below code to check files individually (input)
+    ### Uncomment below code to check files individually (filename input)
     """
     while(True):
         fname = input("Training done. Enter filename to classify: ")
