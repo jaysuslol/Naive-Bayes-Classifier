@@ -3,7 +3,9 @@ import numpy
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.model_selection import cross_val_predict
 from sklearn.model_selection import cross_val_score
+from sklearn.metrics import confusion_matrix
 import nltk
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
@@ -48,13 +50,15 @@ def run(user_options):
     
     #print(documents)
     documents = numpy.array(documents)
-    classes = numpy.array(classes)
+    cv_train = numpy.array(classes)
     #print(documents.shape)
     #print(classes.shape)
     vectors = vectorizer.fit_transform(documents)
-    clf.fit(vectors, classes)
+    clf.fit(vectors, cv_train)
 
+    cv_test = cross_val_predict(clf, vectors, classes, cv=K_FOLD_CROSS_VALIDATION)
     score = cross_val_score(clf, vectors, classes, cv=K_FOLD_CROSS_VALIDATION)
+    cf = confusion_matrix(cv_train, cv_test)
     if (inp[1]):
         print("Model used: Multinomial Naive-Bayes (Non-Binary Term Occurences)\n")
     elif (inp[1] == 2):
@@ -62,8 +66,10 @@ def run(user_options):
 
     print("Results:")
     print(score)
-    print("\nAverage precision:")
-    print(score.sum()/K_FOLD_CROSS_VALIDATION, end="%\n")
+    print("\nAccuracy:")
+    print(score.mean(), end="%\n")
+    print("\nConfusion Matrix:")
+    print(cf)
     
     ### Uncomment below code to check files individually (filename input)
     """
